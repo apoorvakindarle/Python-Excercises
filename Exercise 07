@@ -1,0 +1,98 @@
+# Author Apoorva Kindarle
+# Date 15 Nov 2022
+# EX07: Comparing text
+# Binge watching topic
+
+import nltk
+from wordcloud import WordCloud
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+import matplotlib.pyplot as plt
+
+
+def clean_txt(word_list, stopwords_list, min_len):
+    clean_doc = []
+    vocab = []
+    for line in word_list:
+        parts = line.strip().split()
+        for text in parts:
+            word_l = text.lower()
+            if word_l not in stopwords_list:
+                if word_l.isalpha():
+                    if len(word_l) > min_len:
+                        clean_doc.append(word_l)
+                        if word_l not in vocab:
+                            vocab.append(word_l)
+    return clean_doc, vocab
+# standard code to do the preliminary  cleaning
+
+
+pros_file = open('pros.txt', 'r', encoding='utf8')
+cons_file = open('cons.txt', 'r', encoding='utf8')
+stp_file = open('stopwords_en.txt', 'r', encoding='utf8')
+stopwords = []
+word_list1 = []
+word_list2 = []
+
+for word in pros_file:
+    word_list1.append(word.strip())
+for word in cons_file:
+    word_list2.append(word.strip())
+for word in stp_file:
+    stopwords.append(word.strip())
+    stopwords.extend(['television', 'students', 'movie', 'better', 'compared', 'stream', 'show', 'including',
+                      'episode' 'text', 'device', 'netflix', '.', '!', ',', '?'])
+min_word_len = 3
+clean_file_pros, vocab1 = clean_txt(word_list1, stopwords, min_word_len)
+clean_file_cons, vocab2 = clean_txt(word_list2, stopwords, min_word_len)
+
+
+all_words_string1 = ' '.join(clean_file_pros)
+all_words_string2 = ' '.join(clean_file_cons)
+
+# calculate the sentiment for the 2 texts
+analyzer = SentimentIntensityAnalyzer()
+clean_text_str1 = ' '.join(all_words_string1)
+vad_sentiment = analyzer.polarity_scores(clean_text_str1)
+positive_sentiment = vad_sentiment["pos"]
+negative_sentiment = vad_sentiment["neg"]
+neutral_sentiment = vad_sentiment["neu"]
+print('The following is the distribution of the sentiment for the Pros: ')
+print(' It is positive for', '{:.1%}'.format(positive_sentiment))
+print('It is negative for', '{:.1%}'.format(negative_sentiment))
+print('It is neutral for', '{:.1%}'.format(neutral_sentiment))
+print("\n")
+
+clean_text_str2 = ' '.join(all_words_string2)
+vad_sentiment = analyzer.polarity_scores(clean_text_str2)
+positive_sentiment = vad_sentiment["pos"]
+negative_sentiment = vad_sentiment["neg"]
+neutral_sentiment = vad_sentiment["neu"]
+print("The following is the distribution of the sentiment for the Cons: ")
+print("It is positive for", "{:.1%}".format(positive_sentiment))
+print("It is negative for", "{:.1%}".format(negative_sentiment))
+print("It is neutral for", "{:.1%}".format(neutral_sentiment))
+print("\n")
+
+# Extract bigrams
+print('The following bigrams are extracted from the Pros file:')
+print(list(nltk.bigrams(clean_file_pros)))
+print("\n")
+
+print('The following bigrams are extracted from the Cons file:')
+print(list(nltk.bigrams(clean_file_cons)))
+print("\n")
+ # 'https://www.tutorialspoint.com/python_text_processing/python_bigrams.htm' - source
+
+# word clouds for the 2 texts
+
+clean_file_pros_sen = " ".join(clean_file_pros)
+clean_file_cons_sen = " ".join(clean_file_cons)
+wordcloud_pros = WordCloud(background_color="White",  max_font_size=81).generate(clean_file_pros_sen)
+plt.imshow(wordcloud_pros, interpolation='bilinear')
+plt.axis("off")
+plt.show()
+
+wordcloud_cons = WordCloud(background_color="White",  max_font_size=81).generate(clean_file_cons_sen)
+plt.imshow(wordcloud_cons, interpolation='bilinear')
+plt.axis("off")
+plt.show()
