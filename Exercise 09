@@ -1,0 +1,120 @@
+# Author: Apoorva Kindarle
+# Date: 7 Dec 2022
+# Ex 09 Analyze News
+
+# Importing the libraries
+import pandas as pd
+import matplotlib.pyplot as plt
+from wordcloud import WordCloud
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+from collections import Counter
+
+# Reading the csv file
+news = pd.read_csv('News_2021.csv', encoding="utf8")
+
+# Merging the two columns and creating a list
+data = news[["description", "content"]]
+data = data.fillna(" ")
+data.head()
+data["final"] = data["description"] + data["content"]
+textList = data["final"].tolist()
+
+
+# Cleaning CSV file
+def txt_clean(word_list, stopwords_list):
+    clean_words = []
+    for line in word_list:
+        parts = line.strip().split()  # stripping and splitting the text
+        for word in parts:
+            word_l = word.lower()  # lowering the content of text file
+            if word_l not in stopwords_list:  # removing the words not in stopwords file
+                if word_l.isalpha():
+                    clean_words.append(word_l)  # appending the list
+
+    return clean_words
+
+
+# Removing Stopwords
+stopwords_file = open('stopwords_en.txt', 'r', encoding='utf8')
+stopwords = []
+for i in stopwords_file:
+    stopwords.append(i.strip())
+clean_words = txt_clean(textList, stopwords)
+
+# Printing the top 20 most common words
+counter = Counter(clean_words)
+common = counter.most_common(20)
+print("Twenty most common words are:")
+print()
+for i in range(len(common)):
+    print(str(i+1) + "." + common[i][0])
+print()
+
+# Print the articles related to COVID-19 and calculate their percentage of the total
+covidWords = (['covid', 'coronavirus', 'vaccine', 'vaccination', 'antibody', 'moderna', 'pfizer', 'johnson'])
+covidArticles = []
+nonCovidArticles = []
+covidNumber = 0   # initializing counter for storing number of articles
+
+for i in textList:
+    flag = 0
+    temp = i.split(" ")
+    for j in covidWords:
+        if j in temp:
+            flag = 1
+    if flag == 1:
+        covidArticles.append(i)
+        covidNumber += 1
+    else:
+        nonCovidArticles.append(i)
+print()
+
+# Print and calculate the percentage
+print("The articles related to Covid are as follows- ", covidArticles)
+print()
+print("Total number of covid articles are", covidNumber)
+print("Percentage of covid articles are", (covidNumber / len(textList)) * 100, "%")
+
+
+# Sentiment analysis
+def sentiment(word_list):  # sentiment function to calculate the sentiment of given list of words and print it
+    analyzer = SentimentIntensityAnalyzer()
+    clean_text_str = ' '.join(word_list)  # converting the list into string
+    vad_sentiment = analyzer.polarity_scores(clean_text_str)
+
+    pos = vad_sentiment['pos'] * 100
+    neg = vad_sentiment['neg'] * 100
+    neu = vad_sentiment['neu'] * 100
+    return pos, neg, neu
+
+
+# Print the sentiment for ALL the articles
+print('\n The following is the distribution of the sentiment for all of the articles -')
+p, ng, nu = sentiment(covidArticles)
+print(f'Positive for {p:.1f}%')
+print(f'Negative for {ng:.1f}%')
+print(f'Neutral for {nu:.1f}%', '\n')
+
+# Print the sentiment for all the Non Covid Articles
+print('\nThe following is the distribution of the sentiment for non COVID-19 related articles -')
+non_p, non_ng, non_nu = sentiment(nonCovidArticles)
+print(f'Positive is {non_p:.1f}%')
+print(f'Negative for {non_ng:.1f}%')
+print(f'Neutral for {non_nu:.1f}%', '\n')
+
+# Creating a Wordcloud
+# word cloud with the words in the article not related to COVID-19
+wc_1 = " ".join(nonCovidArticles)
+wordcloud = WordCloud(max_font_size=60, max_words=200, background_color="white").generate(wc_1)
+plt.figure()
+plt.imshow(wordcloud, interpolation='bilinear')
+plt.axis("off")
+plt.show()
+
+# word cloud with the words in the article related to COVID-19
+wc_2 = " ".join(covidArticles)
+wordcloud = WordCloud(max_font_size=60, max_words=200, background_color="white").generate(wc_2)
+plt.figure()
+plt.imshow(wordcloud, interpolation='bilinear')
+plt.axis("off")
+plt.show()
