@@ -1,0 +1,18 @@
+# Author Apoorva Kindarle
+# Ex 01 - Exchange rate
+
+while True:
+    dollar_amount = input("How many US dollars you want to exchange?,  type 'done' to exit: ")
+    if dollar_amount == 'done':
+        print("\nThank you using this tool!")
+        break
+    if dollar_amount.isdigit() == False:
+        print("Enter only integer values")
+        continue
+    currency_name = input("Enter the name of the currency you want to convert dollars into? ")
+    exchange_rate = input("What is the exchange rate? ")
+    if exchange_rate.isdigit() == False:
+        print("Enter the correct integer value")
+        continue
+    conversion_value = int(dollar_amount) * int(exchange_rate)
+    print("You can Exchange", dollar_amount, "US dollars for", conversion_value, currency_name)
