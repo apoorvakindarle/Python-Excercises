@@ -1,0 +1,72 @@
+# Author: Apoorva Kindarle
+# Date: 4 oct 2022
+# Exercise 03
+
+import csv
+
+
+# Part 1
+with open("NYC-CitiBike-Jan_Feb2016.csv", 'r') as csv_file:
+    for lines in (csv_file.readlines()[-5:]):
+        print(lines, end='')
+print("\n")
+
+with open("NYC-CitiBike-Jan_Feb2016.csv", 'r') as csv_file:
+    csvreader = csv.reader(csv_file, delimiter=',')
+    count_a = -1
+    customer_a = 0
+    subscriber_a = 0
+
+    for line in csvreader:
+        count_a = count_a + 1
+        if(line[13] == "Subscriber"):
+            subscriber_a = subscriber_a + 1
+        if(line[13] == "Customer"):
+            customer_a = customer_a + 1
+    per_cust_a = (customer_a/count_a) * 100
+print('The file has', count_a, 'lines. Of those',customer_a,'have usertype as Customer, ', subscriber_a, 'have usertype as Subscriber. "Customer" are',round(per_cust_a, 2),'% of the total.')
+print("\n")
+
+# Part 2
+with open("NYC-CitiBike-Apr_May2016.csv", 'r') as csv_file:
+    for lines in (csv_file.readlines()[1:6]):
+        print(lines, end='')
+print("\n")
+
+with open("NYC-CitiBike-Apr_May2016.csv", 'r') as csv_file:
+    csvreader = csv.reader(csv_file, delimiter=',')
+    count_b = -1
+    customer_b = 0
+    subscriber_b = 0
+if (count_a > count_b):
+        print('The first file is smaller than the second one')
+    else:
+        print('The first file is larger than the second one')
+
+if (per_cust_a > per_cust_b):
+        print('The percentage of Customer in the first file is smaller than in the second one')
+    else:
+        print('The percent of Customer in the first file is larger than in the second one')
+
+    for line in csvreader:
+        count_b = count_b + 1
+        if (line[13] == "Subscriber"):
+            subscriber_b = subscriber_b + 1
+        if (line[13] == "Customer"):
+            customer_b = customer_b + 1
+    per_cust_b = (customer_b / count_b) * 100
+
+print('The file has', count_b, 'lines. Of those',customer_b,'have usertype as Customer, ', subscriber_b, 'have usertype as Subscriber. "Customer" are',round(per_cust_b, 2),'% of the total.')
+print("\n")
+
+# Part 3
+if(count_a > count_b):
+    print('The Winter riders are more than the Spring')
+else:
+    print('The Spring riders are more than the Winter')
+    
+if(per_cust_a > per_cust_b):
+    print('During the Winter there are more Customers/non-Subscribers than in the Spring')
+else:
+    print('During the Spring there are more Customers/non-Subscribers than in the winter')
+print('Thank you for processing')
