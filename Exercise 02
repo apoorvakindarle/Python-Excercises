@@ -1,0 +1,21 @@
+# Author: Apoorva Kindarle
+# ex 02
+
+val = True
+while True:
+    passwrd = input("\n Enter the password")
+    if(passwrd == "done"):
+        print("Goodbye!"):
+        break
+    if len(passwrd) < 5:
+        print("Error,password is less than 5 characters")
+        val = False
+        continue
+    if len(passwrd) > 12:
+        print("Error,password is more than 12 characters")
+        val = False
+        continue
+    if passwrd.isalnum():
+        print("Error,your password is not alphanumeric")
+    else:
+        print("Password Accepted")
